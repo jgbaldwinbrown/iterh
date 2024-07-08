@@ -22,16 +22,8 @@ func RingIter(r *ring.Ring) iter.Seq[*ring.Ring] {
 	}
 }
 
-func RingElementValuesIter(it iter.Seq[*ring.Ring]) iter.Seq[any] {
-	return func(y func(any) bool) {
-		for r := range it {
-			if ok := y(r.Value); !ok {
-				return
-			}
-		}
-	}
-}
-
-func RingValuesIter(r *ring.Ring) iter.Seq[any] {
-	return RingElementValuesIter(RingIter(r))
+func RingValuePtrs(it iter.Seq[*ring.Ring]) iter.Seq[*any] {
+	return Transform(it, func(r *ring.Ring) *any {
+		return &r.Value
+	})
 }

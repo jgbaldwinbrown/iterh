@@ -15,16 +15,8 @@ func ListElements(l *list.List) iter.Seq[*list.Element] {
 	}
 }
 
-func ListElementValues(it iter.Seq[*list.Element]) iter.Seq[any] {
-	return func(y func(any) bool) {
-		for e := range it {
-			if ok := y(e.Value); !ok {
-				return
-			}
-		}
-	}
-}
-
-func ListValues(l *list.List) iter.Seq[any] {
-	return ListElementValues(ListElements(l))
+func ListElementValuePtrs(it iter.Seq[*list.Element]) iter.Seq[*any] {
+	return Transform(it, func(e *list.Element) *any {
+		return &e.Value
+	})
 }
