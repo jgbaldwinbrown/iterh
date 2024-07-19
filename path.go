@@ -14,7 +14,7 @@ func PathIter[T any](path string, f func(io.Reader) iter.Seq2[T, error]) iter.Se
 		r, err := os.Open(path)
 		if err != nil {
 			var t T
-			if ok := yield(t, err); !ok {
+			if !yield(t, err) {
 				return
 			}
 		}
@@ -29,7 +29,7 @@ func MaybeGzPathIter[T any](path string, f func(io.Reader) iter.Seq2[T, error]) 
 		r, err := csvh.OpenMaybeGz(path)
 		if err != nil {
 			var t T
-			if ok := yield(t, err); !ok {
+			if !yield(t, err) {
 				return
 			}
 		}
@@ -44,7 +44,7 @@ func GzPathIter[T any](path string, f func(io.Reader) iter.Seq2[T, error]) iter.
 		r, err := csvh.GzOpen(path)
 		if err != nil {
 			var t T
-			if ok := yield(t, err); !ok {
+			if !yield(t, err) {
 				return
 			}
 		}
@@ -58,7 +58,7 @@ func CsvIter(r io.Reader) iter.Seq2[[]string, error] {
 	cr := csvh.CsvIn(r)
 	return func(yield func([]string, error) bool) {
 		for l, e := cr.Read(); e != io.EOF; l, e = cr.Read() {
-			if ok := yield(l, e); !ok {
+			if !yield(l, e) {
 				return
 			}
 		}
@@ -70,7 +70,7 @@ func JsonIter[T any](r io.Reader) iter.Seq2[T, error] {
 		dec := json.NewDecoder(r)
 		var t T
 		for e := dec.Decode(&t); e != io.EOF; e = dec.Decode(&t) {
-			if ok := yield(t, e); !ok {
+			if !yield(t, e) {
 				return
 			}
 		}
@@ -97,7 +97,7 @@ func GobIter[T any](r io.Reader) iter.Seq2[T, error] {
 		dec := gob.NewDecoder(r)
 		var t T
 		for e := dec.Decode(&t); e != io.EOF; e = dec.Decode(&t) {
-			if ok := yield(t, e); !ok {
+			if !yield(t, e) {
 				return
 			}
 		}

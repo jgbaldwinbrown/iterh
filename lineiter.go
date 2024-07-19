@@ -11,7 +11,7 @@ func LineIter(r io.Reader) iter.Seq2[string, error] {
 		s := bufio.NewScanner(r)
 		s.Buffer([]byte{}, 1e12)
 		for s.Scan() {
-			if ok := y(s.Text(), s.Err()); !ok {
+			if !y(s.Text(), s.Err()) {
 				return
 			}
 		}

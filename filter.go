@@ -8,7 +8,7 @@ func Filter[T any](it iter.Seq[T], filt func(T) bool) iter.Seq[T] {
 	return func(y func(T) bool) {
 		for val := range it {
 			if filt(val) {
-				if ok := y(val); !ok {
+				if !y(val) {
 					return
 				}
 			}
@@ -19,7 +19,7 @@ func Filter[T any](it iter.Seq[T], filt func(T) bool) iter.Seq[T] {
 func Transform[T, U any](it iter.Seq[T], trans func(T) U) iter.Seq[U] {
 	return func(y func(U) bool) {
 		for val := range it {
-			if ok := y(trans(val)); !ok {
+			if !y(trans(val)) {
 				return
 			}
 		}

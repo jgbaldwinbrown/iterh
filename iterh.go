@@ -19,7 +19,7 @@ func BreakOnError[T any](it iter.Seq2[T, error], ep *error) iter.Seq[T] {
 				*ep = err
 				break
 			}
-			if ok := yield(val); !ok {
+			if !yield(val) {
 				break
 			}
 		}
@@ -40,7 +40,7 @@ func AddDummy[T, D any](it iter.Seq[T]) iter.Seq2[T, D] {
 	return func(yield func(T, D) bool) {
 		for val := range it {
 			var d D
-			if ok := yield(val, d); !ok {
+			if !yield(val, d) {
 				break
 			}
 		}
@@ -50,7 +50,7 @@ func AddDummy[T, D any](it iter.Seq[T]) iter.Seq2[T, D] {
 func Swap[T, U any](it iter.Seq2[T, U]) iter.Seq2[U, T] {
 	return func(yield func(U, T) bool) {
 		for t, u := range it {
-			if ok := yield(u, t); !ok {
+			if !yield(u, t) {
 				break
 			}
 		}
@@ -61,7 +61,7 @@ func Enumerate[T any](it iter.Seq[T]) iter.Seq2[int, T] {
 	return func(yield func(int, T) bool) {
 		i := 0
 		for t := range it {
-			if ok := yield(i, t); !ok {
+			if !yield(i, t) {
 				break
 			}
 			i++
@@ -86,7 +86,7 @@ func Zip[T, U any](ti iter.Seq[T], ui iter.Seq[U]) iter.Seq2[T, U] {
 			if !ok {
 				return
 			}
-			if ok := yield(t, u); !ok {
+			if !yield(t, u) {
 				return
 			}
 		}
@@ -96,7 +96,7 @@ func Zip[T, U any](ti iter.Seq[T], ui iter.Seq[U]) iter.Seq2[T, U] {
 func ChannelIter[T any](c <-chan T) iter.Seq[T] {
 	return func(yield func(T) bool) {
 		for val := range c {
-			if ok := yield(val); !ok {
+			if !yield(val) {
 				return
 			}
 		}
@@ -130,7 +130,7 @@ func Range[N Number](start, end, step N) iter.Seq[N] {
 	if step >= z {
 		return func(y func(N) bool) {
 			for i := start; i < end; i += step {
-				if ok := y(i); !ok {
+				if !y(i) {
 					return
 				}
 			}
@@ -138,7 +138,7 @@ func Range[N Number](start, end, step N) iter.Seq[N] {
 	}
 	return func(y func(N) bool) {
 		for i := start; i > end; i += step {
-			if ok := y(i); !ok {
+			if !y(i) {
 				return
 			}
 		}
@@ -148,7 +148,7 @@ func Range[N Number](start, end, step N) iter.Seq[N] {
 func SlicePointerIter[S ~[]T, T any](s []T) iter.Seq[*T] {
 	return func(y func(*T) bool) {
 		for i, _ := range s {
-			if ok := y(&s[i]); !ok {
+			if !y(&s[i]) {
 				return
 			}
 		}
@@ -158,7 +158,7 @@ func SlicePointerIter[S ~[]T, T any](s []T) iter.Seq[*T] {
 func SliceIter[S ~[]T, T any](s []T) iter.Seq[T] {
 	return func(y func(T) bool) {
 		for i, _ := range s {
-			if ok := y(s[i]); !ok {
+			if !y(s[i]) {
 				return
 			}
 		}

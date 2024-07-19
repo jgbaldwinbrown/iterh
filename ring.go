@@ -11,11 +11,11 @@ func RingIter(r *ring.Ring) iter.Seq[*ring.Ring] {
 			return
 		}
 		n := r
-		if ok := y(n); !ok {
+		if !y(n) {
 			return
 		}
 		for n = n.Next(); n != r; n = n.Next() {
-			if ok := y(n); !ok {
+			if !y(n) {
 				return
 			}
 		}

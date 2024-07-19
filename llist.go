@@ -8,7 +8,7 @@ import (
 func ListElements(l *list.List) iter.Seq[*list.Element] {
 	return func(y func(*list.Element) bool) {
 		for e := l.Front(); e != nil; e = e.Next() {
-			if ok := y(e); !ok {
+			if !y(e) {
 				return
 			}
 		}
