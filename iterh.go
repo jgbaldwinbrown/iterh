@@ -145,7 +145,7 @@ func Range[N Number](start, end, step N) iter.Seq[N] {
 	}
 }
 
-func SlicePointerIter[S ~[]T, T any](s []T) iter.Seq[*T] {
+func SlicePointerIter[S ~[]T, T any](s S) iter.Seq[*T] {
 	return func(y func(*T) bool) {
 		for i, _ := range s {
 			if !y(&s[i]) {
