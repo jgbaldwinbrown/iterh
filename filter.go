@@ -39,3 +39,15 @@ func Reduce[T any](it iter.Seq[T], red func(T, T) T) T {
 	}
 	return sum
 }
+
+func Max[T any](it iter.Seq[T], cmp func(T, T) int) T {
+	var hi T
+	started := false
+	for val := range it {
+		if !started || cmp(hi, val) < 0 {
+			hi = val
+			started = true
+		}
+	}
+	return hi
+}
