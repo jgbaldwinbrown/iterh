@@ -4,12 +4,16 @@ import (
 	"iter"
 )
 
+func Append[T any](dst []T, it iter.Seq[T]) []T {
+	for val := range it {
+		dst = append(dst, val)
+	}
+	return dst
+}
+
 func Collect[T any](it iter.Seq[T]) []T {
 	var out []T
-	for val := range it {
-		out = append(out, val)
-	}
-	return out
+	return Append(out, it)
 }
 
 func BreakOnError[T any](it iter.Seq2[T, error], ep *error) iter.Seq[T] {
@@ -36,15 +40,12 @@ func CollectWithError[T any](it iter.Seq2[T, error]) ([]T, error) {
 	return s, nil
 }
 
-func AddDummy[T, D any](it iter.Seq[T]) iter.Seq2[T, D] {
-	return func(yield func(T, D) bool) {
-		for val := range it {
-			var d D
-			if !yield(val, d) {
-				break
-			}
-		}
-	}
+func AddDummy[T, D any](it iter.Seq[T], dummy D) iter.Seq2[T, D] {
+	return Zip(it, Repeat(dummy))
+}
+
+func AddNilError[T any](it iter.Seq[T]) iter.Seq2[T, error] {
+	return Zip(it, Repeat(Zero[error]()))
 }
 
 func Swap[T, U any](it iter.Seq2[T, U]) iter.Seq2[U, T] {
@@ -157,8 +158,8 @@ func SlicePointerIter[S ~[]T, T any](s S) iter.Seq[*T] {
 
 func SliceIter[S ~[]T, T any](s S) iter.Seq[T] {
 	return func(y func(T) bool) {
-		for i, _ := range s {
-			if !y(s[i]) {
+		for _, v := range s {
+			if !y(v) {
 				return
 			}
 		}
