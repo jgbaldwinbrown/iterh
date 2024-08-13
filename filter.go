@@ -2,6 +2,7 @@ package iterh
 
 import (
 	"iter"
+	"cmp"
 )
 
 func Filter[T any](it iter.Seq[T], filt func(T) bool) iter.Seq[T] {
@@ -40,14 +41,61 @@ func Reduce[T any](it iter.Seq[T], red func(T, T) T) T {
 	return sum
 }
 
-func Max[T any](it iter.Seq[T], cmp func(T, T) int) T {
+func MaxFunc[T any](it iter.Seq[T], cmpf func(T, T) int) T {
 	var hi T
 	started := false
 	for val := range it {
-		if !started || cmp(hi, val) < 0 {
+		if !started || cmpf(hi, val) < 0 {
 			hi = val
 			started = true
 		}
 	}
 	return hi
+}
+
+func Max[T cmp.Ordered](it iter.Seq[T]) T {
+	return MaxFunc(it, cmp.Compare)
+}
+
+func Negative[T any](cmpf func(T, T) int) func(T, T) int {
+	return func(a, b T) int {
+		return -cmpf(a, b)
+	}
+}
+
+func Min[T cmp.Ordered](it iter.Seq[T]) T {
+	return MaxFunc(it, Negative[T](cmp.Compare))
+}
+
+func RankFunc[T any](target T, it iter.Seq[T], cmpf func(T, T) int) (perc float64, nhigher, total int) {
+	for val := range it {
+		total++
+		if cmpf(val, target) > 0 {
+			nhigher++
+		}
+	}
+	return float64(nhigher) / float64(total), nhigher, total
+}
+
+func Rank[T cmp.Ordered](target T, it iter.Seq[T]) (perc float64, nhigher, total int) {
+	return RankFunc(target, it, cmp.Compare)
+}
+
+func IndexFunc[T any](it iter.Seq[T], idxf func(T) bool) (i int, val T) {
+	for i, val := range Enumerate(it) {
+		if idxf(val) {
+			return i, val
+		}
+	}
+	var t T
+	return -1, t
+}
+
+func Index[T comparable](target T, it iter.Seq[T]) (i int) {
+	for i, val := range Enumerate(it) {
+		if val == target {
+			return i
+		}
+	}
+	return -1
 }
