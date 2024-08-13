@@ -30,6 +30,22 @@ func BreakOnError[T any](it iter.Seq2[T, error], ep *error) iter.Seq[T] {
 	}
 }
 
+func BreakWithError[T any](it iter.Seq2[T, error]) (iter.Seq[T], *error) {
+	ep := new(error)
+	return BreakOnError(it, ep), ep
+}
+
+func BreakOnErrorMulti[T any](its iter.Seq[iter.Seq2[T, error]], ep *error) iter.Seq[iter.Seq[T]] {
+	return func(y func(iter.Seq[T]) bool) {
+		for it := range its {
+			it2 := BreakOnError(it, ep)
+			if !y(it2) {
+				return
+			}
+		}
+	}
+}
+
 func CollectWithError[T any](it iter.Seq2[T, error]) ([]T, error) {
 	var e error
 	it1 := BreakOnError(it, &e)
