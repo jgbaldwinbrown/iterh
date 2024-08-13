@@ -42,6 +42,9 @@ func BreakOnErrorMulti[T any](its iter.Seq[iter.Seq2[T, error]], ep *error) iter
 			if !y(it2) {
 				return
 			}
+			if *ep != nil {
+				return
+			}
 		}
 	}
 }
