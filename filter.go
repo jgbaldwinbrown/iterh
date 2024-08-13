@@ -53,6 +53,10 @@ func MaxFunc[T any](it iter.Seq[T], cmpf func(T, T) int) T {
 	return hi
 }
 
+func MinFunc[T any](it iter.Seq[T], cmpf func(T, T) int) T {
+	return MaxFunc(it, Negative(cmpf))
+}
+
 func Max[T cmp.Ordered](it iter.Seq[T]) T {
 	return MaxFunc(it, cmp.Compare)
 }
@@ -64,7 +68,7 @@ func Negative[T any](cmpf func(T, T) int) func(T, T) int {
 }
 
 func Min[T cmp.Ordered](it iter.Seq[T]) T {
-	return MaxFunc(it, Negative[T](cmp.Compare))
+	return MinFunc(it, cmp.Compare)
 }
 
 func RankFunc[T any](target T, it iter.Seq[T], cmpf func(T, T) int) (perc float64, nhigher, total int) {
