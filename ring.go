@@ -22,8 +22,12 @@ func RingIter(r *ring.Ring) iter.Seq[*ring.Ring] {
 	}
 }
 
-func RingValuePtrs(it iter.Seq[*ring.Ring]) iter.Seq[*any] {
-	return Transform(it, func(r *ring.Ring) *any {
+func RingPtrs(r *ring.Ring) iter.Seq[*any] {
+	return Transform(RingIter(r), func(r *ring.Ring) *any {
 		return &r.Value
 	})
+}
+
+func RingValues(r *ring.Ring) iter.Seq[any] {
+	return Elems(RingPtrs(r))
 }

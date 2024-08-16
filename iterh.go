@@ -2,19 +2,8 @@ package iterh
 
 import (
 	"iter"
+	"slices"
 )
-
-func Append[T any](dst []T, it iter.Seq[T]) []T {
-	for val := range it {
-		dst = append(dst, val)
-	}
-	return dst
-}
-
-func Collect[T any](it iter.Seq[T]) []T {
-	var out []T
-	return Append(out, it)
-}
 
 func BreakOnError[T any](it iter.Seq2[T, error], ep *error) iter.Seq[T] {
 	return func(yield func(T) bool) {
@@ -52,7 +41,7 @@ func BreakOnErrorMulti[T any](its iter.Seq[iter.Seq2[T, error]], ep *error) iter
 func CollectWithError[T any](it iter.Seq2[T, error]) ([]T, error) {
 	var e error
 	it1 := BreakOnError(it, &e)
-	s := Collect(it1)
+	s := slices.Collect(it1)
 	if e != nil {
 		return nil, e
 	}
@@ -87,14 +76,6 @@ func Enumerate[T any](it iter.Seq[T]) iter.Seq2[int, T] {
 			i++
 		}
 	}
-}
-
-func CollectMap[K comparable, V any](it iter.Seq2[K, V]) map[K]V {
-	m := map[K]V{}
-	for k, v := range it {
-		m[k] = v
-	}
-	return m
 }
 
 func Zip[T, U any](ti iter.Seq[T], ui iter.Seq[U]) iter.Seq2[T, U] {
@@ -165,20 +146,10 @@ func Range[N Number](start, end, step N) iter.Seq[N] {
 	}
 }
 
-func SlicePointerIter[S ~[]T, T any](s S) iter.Seq[*T] {
+func SlicePtrs[S ~[]T, T any](s S) iter.Seq[*T] {
 	return func(y func(*T) bool) {
 		for i, _ := range s {
 			if !y(&s[i]) {
-				return
-			}
-		}
-	}
-}
-
-func SliceIter[S ~[]T, T any](s S) iter.Seq[T] {
-	return func(y func(T) bool) {
-		for _, v := range s {
-			if !y(v) {
 				return
 			}
 		}

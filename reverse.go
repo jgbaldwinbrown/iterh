@@ -2,6 +2,7 @@ package iterh
 
 import (
 	"iter"
+	"slices"
 )
 
 func ReverseSliceIter[S ~[]T, T any](s S) iter.Seq[T] {
@@ -15,7 +16,7 @@ func ReverseSliceIter[S ~[]T, T any](s S) iter.Seq[T] {
 }
 
 func Reverse[T any](it iter.Seq[T]) iter.Seq[T] {
-	s := Collect(it)
+	s := slices.Collect(it)
 	return ReverseSliceIter(s)
 }
 

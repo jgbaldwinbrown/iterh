@@ -2,13 +2,16 @@ package iterh
 
 import (
 	"iter"
+	"slices"
 )
 
-func Repeat[T any](val T) iter.Seq[T] {
+func Repeat[T any](vals ...T) iter.Seq[T] {
 	return func(y func(T) bool) {
 		for {
-			if !y(val) {
-				return
+			for _, val := range vals {
+				if !y(val) {
+					return
+				}
 			}
 		}
 	}
@@ -47,8 +50,8 @@ func CutHead[T any](it iter.Seq[T], n int) iter.Seq[T] {
 	}
 }
 
-func RepeatN[T any](val T, n int) iter.Seq[T] {
-	return Head(Repeat(val), n)
+func RepeatN[T any](n int, vals ...T) iter.Seq[T] {
+	return Head(Repeat(vals...), n * len(vals))
 }
 
 func Zero[T any]() T {
@@ -56,7 +59,7 @@ func Zero[T any]() T {
 	return t
 }
 
-func RepeatSlice[T any](val T, n int) []T {
-	out := make([]T, 0, n)
-	return Append(out, RepeatN(val, n))
+func RepeatSlice[T any](n int, vals ...T) []T {
+	out := make([]T, 0, n * len(vals))
+	return slices.AppendSeq(out, RepeatN(n, vals...))
 }
