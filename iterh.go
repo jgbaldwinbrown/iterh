@@ -155,3 +155,23 @@ func SlicePtrs[S ~[]T, T any](s S) iter.Seq[*T] {
 		}
 	}
 }
+
+func First[T, U any](it iter.Seq2[T, U]) iter.Seq[T] {
+	return func(y func(T) bool) {
+		for t, _ := range it {
+			if !y(t) {
+				return
+			}
+		}
+	}
+}
+
+func Second[T, U any](it iter.Seq2[T, U]) iter.Seq[U] {
+	return func(y func(U) bool) {
+		for _, u := range it {
+			if !y(u) {
+				return
+			}
+		}
+	}
+}
