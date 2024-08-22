@@ -49,11 +49,11 @@ func CollectWithError[T any](it iter.Seq2[T, error]) ([]T, error) {
 }
 
 func AddDummy[T, D any](it iter.Seq[T], dummy D) iter.Seq2[T, D] {
-	return Zip(it, Repeat(dummy))
+	return Zip(it, RepeatForever(dummy))
 }
 
 func AddNilError[T any](it iter.Seq[T]) iter.Seq2[T, error] {
-	return Zip(it, Repeat(Zero[error]()))
+	return Zip(it, RepeatForever(Zero[error]()))
 }
 
 func Swap[T, U any](it iter.Seq2[T, U]) iter.Seq2[U, T] {

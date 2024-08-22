@@ -5,7 +5,7 @@ import (
 	"slices"
 )
 
-func Repeat[T any](vals ...T) iter.Seq[T] {
+func RepeatForever[T any](vals ...T) iter.Seq[T] {
 	return func(y func(T) bool) {
 		for {
 			for _, val := range vals {
@@ -50,8 +50,8 @@ func CutHead[T any](it iter.Seq[T], n int) iter.Seq[T] {
 	}
 }
 
-func RepeatN[T any](n int, vals ...T) iter.Seq[T] {
-	return Head(Repeat(vals...), n * len(vals))
+func Repeat[T any](n int, vals ...T) iter.Seq[T] {
+	return Head(RepeatForever(vals...), n * len(vals))
 }
 
 func Zero[T any]() T {
@@ -61,5 +61,5 @@ func Zero[T any]() T {
 
 func RepeatSlice[T any](n int, vals ...T) []T {
 	out := make([]T, 0, n * len(vals))
-	return slices.AppendSeq(out, RepeatN(n, vals...))
+	return slices.AppendSeq(out, Repeat(n, vals...))
 }
