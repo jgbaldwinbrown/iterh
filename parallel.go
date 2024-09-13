@@ -14,7 +14,7 @@ func ParallelRun(fs iter.Seq[func()], threads int) {
 		g.Go(func() error {
 			f()
 			return nil
-		}
+		})
 	}
 	g.Wait()
 }
