@@ -15,3 +15,7 @@ func Flatten[T any](itit iter.Seq[iter.Seq[T]]) iter.Seq[T] {
 		}
 	}
 }
+
+func Concatenate[T any](itit iter.Seq[iter.Seq[T]]) iter.Seq[T] {
+	return Flatten(itit)
+}
