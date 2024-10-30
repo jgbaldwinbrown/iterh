@@ -38,6 +38,7 @@ func Window[T any](it iter.Seq[T], winsize int, winstep int) iter.Seq[WinView[T]
 					return
 				}
 			}
+			d.PushBack(val)
 		}
 		if i % winstep != 0 {
 			for d.Len() > winsize {
