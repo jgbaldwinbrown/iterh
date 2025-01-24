@@ -2,6 +2,7 @@ package iterh
 
 import (
 	"iter"
+	"slices"
 )
 
 func Flatten[T any](itit iter.Seq[iter.Seq[T]]) iter.Seq[T] {
@@ -16,6 +17,6 @@ func Flatten[T any](itit iter.Seq[iter.Seq[T]]) iter.Seq[T] {
 	}
 }
 
-func Concatenate[T any](itit iter.Seq[iter.Seq[T]]) iter.Seq[T] {
-	return Flatten(itit)
+func Cat[T any](its ...iter.Seq[T]) iter.Seq[T] {
+	return Flatten(slices.Values(its))
 }
